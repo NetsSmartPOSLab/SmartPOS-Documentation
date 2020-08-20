@@ -133,4 +133,60 @@ similar (examplified in the DEBUG log message).
 
 ###Payloads
 
+Each of the different functionalities of the SDK require a sort of payload, 
+though they differ slightly. Pretty much all payloads are defined in the
+`eu.nets.lab.smartpos.sdk.payload` package, and most include both Java style
+`Builder`s and Kotlin top-level DSL style builder functions.
+
+####End-of-day
+
+The simplest payload is the end-of-day payload, because all that is needed is an
+`UUID` that identifies this end-of-day operation. Given that a SmartPOS merchant
+can have several payment methods installed, an end-of-day operation is spread
+over all installed methods, and as such, they can each have their own internal
+ID, so a common one is defined by the ECR at the start of the operation.
+
+For the payload, we simply use the `ParcelUuid` type, which is in Android by
+default. The return type is an `EndOfDayResult`, which includes the `UUID`,
+a timestamp and a map of individual values for each installed payment method.
+
+####Payment
+
+The payment operation is arguably the most important operation. It requires a
+`PaymentData` payload, which can be created in multiple ways. Either, it can
+just be created using its public constructor, however this option might be 
+removed in the future.
+
+The prefered method of creating the payload is using either the Kotlin DSL style
+top level function or the Java style builder.
+
+In Kotlin, it looks like this:
+
+```
+(...)
+val data = paymentData {
+    this.uuid = UUID.randomUUID()
+    this.amount = 1000L
+    this.vat = 250L
+    this.currency = "DKK"
+    this.aux put "akey" value "avalue"
+}
+```
+
+In Java would look like this:
+
+```
+(...)
+var data = PaymentData.Builder()
+    .uuid(UUID.randomUUID())
+    .amount(1000L)
+    .vat(250L)
+    .currency("DKK")
+    .aux(Collections.singletonMap("akey", "avalue"))
+    .build()
+```
+
+
+
+
 
