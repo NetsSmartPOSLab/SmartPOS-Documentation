@@ -10,13 +10,15 @@ applications on the same device via application switching. The approach taken
 here is made to be similar to the interface presented in SoftPay, another Nets
 solution built for consumer devices.
 
-The functionality of the Nets SmartPOS SDK (henceforth "SDK) is split into two
+The functionality of the Nets SmartPOS SDK (henceforth "SDK") is split into two
 separate entities:
 
 - The Nets SmartPOS SDK library
 - The Nets Payment Selection application
 
-The latter is provided through **TODO**, as a signed and packaged application
+The latter is provided through Nets' gateway (TODO), or for testing, 
+downloadable from the `release` folder in this repository, 
+as a signed and packaged application
 that runs independently on the device. There will follow a short description on
 the purpose and functionality of the Nets Payment Selection application.
 
@@ -50,7 +52,7 @@ the following to your `gradle.build` files:
 
 To your project `build.gradle` file, add the following
 
-```
+``` kotlin
 maven {
     url("https://creationlab.pkgs.visualstudio.com/2d5fd41c-2a79-4787-98dc-e0db6ec5c293/_packaging/NetsSmartPos/maven/v1")
 }
@@ -58,8 +60,8 @@ maven {
 
 to the `allprojects.repositories` block. To the module `build.gradle` file, add:
 
-```
-implementation("eu.nets.lab.smartpos:nets-smartpos-sdk:1.0.3")
+``` kotlin
+implementation("eu.nets.lab.smartpos:nets-smartpos-sdk:1.0.4")
 ```
 
 to the `dependencies` block.
@@ -77,7 +79,7 @@ API level 23, the one that the Saturn S1000F1 uses.
 The first step to make a payment is to obtain a `NetsClient` object. This can be
 done from any activity or fragment, using the following:
 
-```
+``` kotlin
 val client = try {
     NetsClient.create(this)
 } catch (e: ClientNotDisposedException) {
@@ -108,7 +110,7 @@ should happen. It always take a `data` parameter of the request payload type of
 that manager, and a callback consumer function of the result payload type. An
 example of how to use `process` can be:
 
-```
+``` kotlin
 (...)
 val paymentManager = client.paymentManager
 try {
@@ -162,7 +164,7 @@ top level function or the Java style builder.
 
 In Kotlin, it looks like this:
 
-```
+``` kotlin
 (...)
 val data = paymentData {
     this.uuid = UUID.randomUUID()
@@ -175,18 +177,23 @@ val data = paymentData {
 
 In Java would look like this:
 
-```
+``` java
 (...)
 var data = PaymentData.Builder()
     .uuid(UUID.randomUUID())
-    .amount(1000L)
-    .vat(250L)
+    .amount(1000)
+    .vat(250)
     .currency("DKK")
     .aux(Collections.singletonMap("akey", "avalue"))
     .build()
 ```
 
+For more information about the payloads, look up the 
+[Payment guide](/payment).
 
+Once a payload is built, it can be given to the `PaymentManager`s `process`
+function and the payment will be processed with the given parameters.
 
-
-
+If desired, the `requestedMethod` property allows the ECR app to request a
+specific payment method, though if that payment method isn't installed, this is
+ignored, and the normal selection screen will come up instead.
