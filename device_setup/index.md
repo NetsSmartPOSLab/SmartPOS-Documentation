@@ -11,9 +11,8 @@ Installation on a device is performed in 4 separate installation functions:
  3. Install test security keys
  4. Install Kinetic Go Release
 
- ```
-NOTE: If the device is restarted while in Debug mode, the security keys will be lost. Always exit Debug mode (if used) before restarting the device. If the security keys are lost, they can only be reinstalled by following the installation process starting with Factory Reset.
-```
+
+> NOTE: If the device is restarted while in Debug mode, the security keys will be lost. Always exit Debug mode (if used) before restarting the device. If the security keys are lost, they can only be reinstalled by following the installation process starting with Factory Reset.
 
 ## 1. Prepare the device
 
@@ -57,11 +56,11 @@ folder in the install package above
 2. Launch the "Key\_Injection" application on the Android device
 3. Go to "Initial Key(KEK)" tab in the key\_injection\_tool on your computer
     1. Key Storage: "TR31"
-    2. KEK Key Type: 3DES
-    3. Key Set: CFFF
-    4. Key Index: 0000
+    2. KEK Key Type: "3DES"
+    3. Key Set: "CFFF"
+    4. Key Index: "0000"
 4. Uncheck "Use Component Key"
-5. Key Value: 00000000000000000000000000000000
+5. Key Value: "00000000000000000000000000000000"
     * NOTE: 32 'zero' characters
 6. Click "Inject", you can see this complete in the key\_injection\_tool window
 on your computer
