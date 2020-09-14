@@ -25,10 +25,10 @@ and handles `null` values as well.
 
 ## TargetMethod
 
-The `TargetMethod` enumeration class is an enumeration of *all* available
-payment methods. Each payment method has a `TargetMethod` value, which can be
-used to request specific payment methods when making payments, as well as for
-persistence and more.
+The `eu.nets.lab.smartpos.sdk.payload.TargetMethod` enumeration class is an
+enumeration of *all* available payment methods. Each payment method has a
+`TargetMethod` value, which can be used to request specific payment methods when
+making payments, as well as for persistence and more.
 
 At the time of writing, the following values are included:
 
