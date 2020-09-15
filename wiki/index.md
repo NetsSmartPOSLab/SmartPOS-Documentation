@@ -179,13 +179,13 @@ In Java would look like this:
 
 ``` java
 (...)
-var data = PaymentData.Builder()
+PaymentData data = new PaymentData.Builder()
     .uuid(UUID.randomUUID())
     .amount(1000)
     .vat(250)
     .currency("DKK")
     .aux(Collections.singletonMap("akey", "avalue"))
-    .build()
+    .build();
 ```
 
 For more information about the payloads, look up the 

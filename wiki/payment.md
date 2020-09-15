@@ -64,3 +64,78 @@ The properties of `PaymentResult` are as follows:
 A "Builder" is available for all payload types, including `PaymentData`. To not
 repeat the same over and over again, a special [builders](/builders) page is
 available.
+
+## Using PaymentManager
+
+To initialise payments, the SDK provides the `PaymentManager` class, which is
+available from the `NetsClient` ([link](/client)) object, using either
+`client.paymentManager` in Kotlin or `client.getPaymentManager()` in Java.
+
+The functionality of the `PaymentManager` is fairly simple; it provides the
+`process` function that is used to start the payment, as well as several 
+overrides for Java interoperability. It also stores the provided `PaymentData`,
+which is why the `PaymentManager` is a single-use. The `PaymentData` is 
+available after the payment attempt has been finalised using `manager.data` in
+Kotling or `manager.getData()` in Java.
+
+Using the `PaymentManager` is simple: simply call the `process` function and
+handle the response in the callback. The SDK is built with Kotlin-first in mind,
+but an override is available for Java using the functional `SmartPosConsumer`
+interface, both as a consumer with a lambda or as common in many older Android 
+applications by implementing it.
+
+An example could be:
+
+```kotlin
+(...)
+val client = NetsClient.create(this)
+val manager = client.paymentManager
+manager.process(data) { paymentResult -> 
+    client.dispose() // Dispose of the NetsClient
+    // Some logic to handle paymentResult
+}
+```
+
+or in Java
+
+```java
+class TestActivity extends AppCompatActivity {
+    public void test() {
+        PaymentData data = new PaymentData.Builder()
+                .uuid(UUID.randomUUID()).amount(100L).vat(25L).currency("EUR").build();
+        try {
+            NetsClient client = NetsClient.create(this);
+            PaymentManager manager = client.getPaymentManager();
+            manager.process(data, (PaymentResult result) -> System.out.println(result.toString()));
+        } catch (ClientNotDisposedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+or
+
+```java
+class TestActivity extends AppCompatActivity implements SmartPosConsumer<PaymentResult> {
+    public void test() {
+        PaymentData data = new PaymentData.Builder()
+                .uuid(UUID.randomUUID()).amount(100L).vat(25L).currency("EUR").build();
+        try {
+            NetsClient client = NetsClient.create(this);
+            PaymentManager manager = client.getPaymentManager();
+            manager.process(data, this);
+        } catch (ClientNotDisposedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onSmartPosResponse(PaymentResult response) {
+        System.out.println(response.toString());
+    }
+}
+```
+
+The handling of the payment result is very dependent on the specific ECR, so it
+is omitted here.
