@@ -37,7 +37,7 @@ A "Builder" is available for all payload types, including `PaymentData`. To not
 repeat the same over and over again, a special [builders](/builders) page is
 available.
 
-### Payment Result
+### PaymentResult
 
 The `PaymentResult` is the corresponding payload to `PaymentData`. It is 
 designed to return all the necessary data as properties, as well as a lot of
@@ -61,9 +61,9 @@ The properties of `PaymentResult` are as follows:
 
 #### Builder
 
-A "Builder" is available for all payload types, including `PaymentData`. To not
-repeat the same over and over again, a special [builders](/builders) page is
-available.
+A "Builder" is available for all payload types, including `PaymentResult`.
+To not repeat the same over and over again, a special [builders](/builders) page
+is available.
 
 ## Using PaymentManager
 
@@ -72,11 +72,11 @@ available from the `NetsClient` ([link](/client)) object, using either
 `client.paymentManager` in Kotlin or `client.getPaymentManager()` in Java.
 
 The functionality of the `PaymentManager` is fairly simple; it provides the
-`process` function that is used to start the payment, as well as several 
-overrides for Java interoperability. It also stores the provided `PaymentData`,
-which is why the `PaymentManager` is a single-use. The `PaymentData` is 
-available after the payment attempt has been finalised using `manager.data` in
-Kotling or `manager.getData()` in Java.
+`process` function that is used to start the payment, as well as an override for
+Java interoperability. It also stores the provided `PaymentData`, which is why
+the `PaymentManager` is a single-use. The `PaymentData` is available after the
+payment attempt has been finalised using `manager.data` in Kotlin or
+`manager.getData()` in Java.
 
 Using the `PaymentManager` is simple: simply call the `process` function and
 handle the response in the callback. The SDK is built with Kotlin-first in mind,
@@ -88,6 +88,12 @@ An example could be:
 
 ```kotlin
 (...)
+val data = paymentData {
+    uuid = UUID.randomUUID()
+    amount = 100L
+    vat = 25L
+    currency = "EUR"
+}
 val client = NetsClient.create(this)
 val manager = client.paymentManager
 manager.process(data) { paymentResult -> 
@@ -102,7 +108,9 @@ or in Java
 class TestActivity extends AppCompatActivity {
     public void test() {
         PaymentData data = new PaymentData.Builder()
-                .uuid(UUID.randomUUID()).amount(100L).vat(25L).currency("EUR").build();
+                .uuid(UUID.randomUUID())
+                .amount(100L).vat(25L).currency("EUR")
+                .build();
         try {
             NetsClient client = NetsClient.create(this);
             PaymentManager manager = client.getPaymentManager();
@@ -120,7 +128,9 @@ or
 class TestActivity extends AppCompatActivity implements SmartPosConsumer<PaymentResult> {
     public void test() {
         PaymentData data = new PaymentData.Builder()
-                .uuid(UUID.randomUUID()).amount(100L).vat(25L).currency("EUR").build();
+                .uuid(UUID.randomUUID())
+                .amount(100L).vat(25L).currency("EUR")
+                .build();
         try {
             NetsClient client = NetsClient.create(this);
             PaymentManager manager = client.getPaymentManager();
@@ -139,3 +149,15 @@ class TestActivity extends AppCompatActivity implements SmartPosConsumer<Payment
 
 The handling of the payment result is very dependent on the specific ECR, so it
 is omitted here.
+
+## PaymentStatus
+
+The following values exist for `PaymentStatus` and should be handled:
+
+|Value|Description|
+|-----|-----------|
+|`PAYED`|The payment has been authorised and captured, the payment is fully complete|
+|`AUTHORISED`|The payment has been authorised but not captured. Not currently returned to the ECR app|
+|`DECLINED`|The payment was for some reason declined by the payment method. More info may be available in the `aux` map|
+|`CANCELLED`|The payment was cancelled by the user|
+|`NO_RESULT`|At some point during the process, the result was lost. Query the transaction ID to check for the status|
