@@ -28,11 +28,11 @@ data) for each:
 |`cardSequenceNumber`|The card sequence number|Value "5F34" from `tags`|
 |`authNumber`|The authorization number, different from the authorization code|`auth_code`|
 |`timestamp`|The timestamp of the transaction|`ended_at`\*|
-|`formattedTimestamp`|`timestamp` formatted as "yyyy-MM-dd HH:mm:ss"|`ended_at`|
+|`formattedTimestamp`|`timestamp` formatted as "yyyy-MM-dd HH:mm:ss"|`ended_at`\*|
 |`applicationLabel`|The application name, if any|`app_label`|
 |`type`|The transaction type, e.g. "sale" or "refund"|`type`|
 |`terminalID`|The terminal ID|`online_response`.`terminal_ID`|
-|`currency`|The currency as a numerical code\*\*|`Value "5F2A" from `tags`|
+|`currency`|The currency as a numerical code\*\*|Value "5F2A" from `tags`|
 
 \* `ended_at` is chosen as the source at the moment, instead of 
 `online_response`.`datetime` as this should be almost the same, and removes the
@@ -44,3 +44,122 @@ letter currency code
 
 The following values are missing from the "receipt" map at the current time:
 authorization code, merchant ID, TCC, reference number and currency translateon.
+
+## Raw data
+
+This is where I'd put the documentation for the raw data if I had any.
+
+I will add the raw KDoc I've written for the types, however, please translate
+camel case to snake case yourself:
+
+Main data:
+
+```
+@property accountNumber The masked card PAN
+@property amount The amount in hundredths of currency denotation
+@property amountOther ???
+@property appConfirmationRequired App confirmation required?
+@property appLabel I assume the label of the app of [appConfirmationRequired]
+@property attemptedSources The list of attempted sources of transaction media (contactless, contact, etc)
+@property attemptsRemaining The remaining attempts of this transaction
+@property authCode The authentication code ???
+@property cardExpiry The expiry year and month of the card that made the transaction
+@property cvmMode ???
+@property duration The duration of the transaction, I assume
+@property endedAt The timestamp of the payment, in seconds since epoch
+@property host Always Nets ???
+@property id The ID of the transaction
+@property inputSource The source that completed the transaction
+@property isActive ???
+@property isContactless `true` if contactless was tried
+@property isContactlessTransactionLimitExceeded I assume `true` if the contactless limit is exceeded
+@property isEmv `true` if EMV was tried
+@property isFallback `true` if fallback method
+@property isForceOnline `true` if this is forced online
+@property isKeyed `true` if ???
+@property isOfflineRepeat `true` if ???
+@property isOnline `true` if online transaction
+@property isOnlinePin `true` if online PIN was used
+@property isOfflinePin `true` if offline PIN was used
+@property isReversed ???
+@property isSignatureRequired `true` if signature is required
+@property issuerId The issuer ID of the card (I assume)
+@property ksn ???
+@property messageNumber ???
+@property numAttempts ???
+@property onlineResponse The online response object
+@property onlineResult The online result
+@property pinBlock ???
+@property referenceTxnId ???
+@property result The result. Not 100% sure how this is different from [status]
+@property scheme ???
+@property sessionNumber ???
+@property shouldFallback ???
+@property shouldRetry ???
+@property startedAt The timestamp of the payment, in seconds since epoch
+@property status The status of the transaction
+@property statusDetails The status, but longer
+@property tags ???
+@property terminalOnlineDecision ???
+@property timeoutMs The timeout of the transaction
+@property tipAmount ???
+@property totalAmount [amount] + [amountOther] I assume
+@property type What type of transaction this is
+```
+
+For `card_details`:
+
+```
+@property scheme The card scheme ???
+@property track1 ???
+@property track2 ???
+```
+
+For `online_response`:
+
+```
+@property dialIndicator ???
+@property terminalId The terminal ID I suppose
+@property messageNumber Seems to match [TransactionInfo.messageNumber]
+@property messageTypeId ???
+@property responseCode ???
+@property confirmationRequest ???
+@property debitsTotal The total amount processed as debit transactions
+@property debitsCount The total count of debit transactions
+@property creditsTotal The total amount processed as credit transactions
+@property creditsCount The total count of credit transactions
+@property cashAmount Cash amount???
+@property cashAmountQty Cash amount quantity???
+@property depositAmount Deposit amount??
+@property depositAmountQty Deposit amount quantity???
+@property authorization Authorisation information I assume
+@property totalAmount Not the same as [TransactionInfo.totalAmount], no clue what it is. Possibly the total amount since last EOD. Is this for EOD transactions
+@property sessionNumber The session number, same as [TransactionInfo.sessionNumber]
+@property responseText Some response text information
+@property referralPhoneNumber ???
+@property floorLimit ???
+@property datetime The date-time in the format "yyMMddHHmmss"
+@property issuerId The issuer ID, seems to match [TransactionInfo.issuerId]
+@property informationField If there is any justice, it contains information
+@property optionalData If there is any justice, it contains optional data
+@property iccData ??
+@property result The result, seem to match [TransactionInfo.result]
+@property responseCodeHuman The result, but for humans (more info)
+```
+
+For `online_response.authorization`:
+
+```
+@property txnSeqNum ???
+@property atc ???
+```
+
+For `online_response`.`response_text`:
+
+```
+@property merchant ???
+@property receipt ???
+@property pinpad ???
+```
+
+
