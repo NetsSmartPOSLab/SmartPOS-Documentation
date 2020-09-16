@@ -3,3 +3,4 @@ payment
 refund
 builder
 types
+card_transaction_auxiliary_data
