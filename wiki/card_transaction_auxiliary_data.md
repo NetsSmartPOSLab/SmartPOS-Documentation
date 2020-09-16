@@ -147,7 +147,7 @@ For `online_response`:
 @property responseCodeHuman The result, but for humans (more info)
 ```
 
-For `online_response.authorization`:
+For `online_response`.`authorization`:
 
 ```
 @property txnSeqNum ???
