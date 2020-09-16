@@ -2,6 +2,7 @@ index
 nets_client
 payment
 refund
+transaction_status
 builders
 types
 card_transaction_auxiliary_data
