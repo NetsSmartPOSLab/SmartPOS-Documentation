@@ -6,11 +6,11 @@ the printing of valid receipts, we include two sub-maps in the auxiliary data
 (`aux`) property of the result payloads: `receipt` and `raw`. (That is, the
 `eodAux` property in the end-of-day response.)
 
-## Receipt Data
+## Payment Receipt Data
 
 The following includes information about what is added to the "receipt" map in
-response payloads. These are the values that should be printed on a card payment
-receipts, and we therefore aim to provide them in an easily read manner.
+payment response payloads. These are the values that should be printed on a card
+payment receipts, and we therefore aim to provide them in an easily read manner.
 
 The following table include the key, description and data source (in the raw 
 data) for each:
@@ -44,6 +44,44 @@ letter currency code
 
 The following values are missing from the "receipt" map at the current time:
 authorization code, merchant ID, TCC, reference number and currency translateon.
+
+## Refund Receipt Data
+
+Currently not implemented, returns payment receipt data
+
+## End of Day Receipt Data
+
+The following data is what could be printed on an end of day receipt. This 
+section includes information about what properties are included.
+
+|Key|Description|Data source|
+|---|-----------|-----------|
+|`visa`|The information about Visa transactions. The output is a map, described below|`online_response`.`visa`|
+|`mastercard`|The information about MasterCard transactions. The output is a map, described below|`online_response`.`mastercard`|
+|`maestro`|The information about Maestro transactions. The output is a map, described below|`online_response`.`maestro`|
+|`terminalID`|The terminal ID|`online_response`.`terminal_ID`|
+|`timestamp`|The timestamp of the transaction|`ended_at`\*|
+|`formattedTimestamp`|`timestamp` formatted as "yyyy-MM-dd HH:mm:ss"|`ended_at`\*|
+|`totalAmount`|The total amount|`online_response`.`total_amount`|
+
+\* `ended_at` is chosen as the source at the moment, instead of 
+`online_response`.`datetime` as this should be almost the same, and removes the
+dependency on `online_response`. It is chosen over the "9A" and "9F21" values 
+from `tags` as these aren't consistent with regards to local time zones.
+
+In each of `visa`, `mastercard` and `maestro`, the following data is included
+
+|Key|Description|Data source|
+|---|-----------|-----------|
+|`debitsTotal`|The total amount for debit transactions|`debits_total`|
+|`debitsCredit`|The total count of debit transactions||`debits_count`|
+|`creditsTotal`|The total amount for credit transactions|`credits_total`|
+|`creditsCredit`|The total count of credit transactions||`credits_count`|
+|`cashAmount`|The total amount for cash transactions|`cash_amount`|
+|`cashAmountQuantity`|The total count of cash transactions||`cash_amount_qty`|
+|`result`|The result for this scheme type|`result`|
+
+The descriptions here may not be completely correct.
 
 ## Raw data
 
