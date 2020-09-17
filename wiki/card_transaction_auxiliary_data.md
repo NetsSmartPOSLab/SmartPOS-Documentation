@@ -69,7 +69,8 @@ section includes information about what properties are included.
 dependency on `online_response`. It is chosen over the "9A" and "9F21" values 
 from `tags` as these aren't consistent with regards to local time zones.
 
-There is no way for me to get the currency information from this API.
+There is no way for me to get the currency information or merchant ID from this
+API.
 
 In each of `visa`, `mastercard` and `maestro`, the following data is included
 
