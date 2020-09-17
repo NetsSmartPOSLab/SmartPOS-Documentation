@@ -3,6 +3,7 @@ nets_client
 payment
 refund
 transaction_status
+end_of_day
 builders
 types
 card_transaction_auxiliary_data

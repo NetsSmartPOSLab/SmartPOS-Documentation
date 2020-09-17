@@ -64,4 +64,6 @@ data and see if that has a matching result first.
 Currently the transactions are stored forever, which probably shouldn't be the
 case.
 
+Getting transaction status of end of day payloads.
+
 Any other ideas can be submitted to @Simon Malone
