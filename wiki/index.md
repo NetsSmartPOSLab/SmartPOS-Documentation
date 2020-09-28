@@ -61,7 +61,7 @@ maven {
 to the `allprojects.repositories` block. To the module `build.gradle` file, add:
 
 ``` kotlin
-implementation("eu.nets.lab.smartpos:nets-smartpos-sdk:1.0.10")
+implementation("eu.nets.lab.smartpos:nets-smartpos-sdk:1.0.12")
 ```
 
 to the `dependencies` block.
