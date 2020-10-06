@@ -72,19 +72,42 @@ available from the `NetsClient` ([link](/client)) object, using either
 `client.paymentManager` in Kotlin or `client.getPaymentManager()` in Java.
 
 The functionality of the `PaymentManager` is fairly simple; it provides the
-`process` function that is used to start the payment, as well as an override for
-Java interoperability. It also stores the provided `PaymentData`, which is why
+`register` function that is used to register a callback for when a payment 
+attempt is completed, as well as an override for
+Java interoperability. Furthermore, it contains the `process` function to
+actually start processing the payment attempt.
+It also stores the provided `PaymentData`, which is why
 the `PaymentManager` is a single-use. The `PaymentData` is available after the
 payment attempt has been finalised using `manager.data` in Kotlin or
 `manager.getData()` in Java.
 
-Using the `PaymentManager` is simple: simply call the `process` function and
-handle the response in the callback. The SDK is built with Kotlin-first in mind,
-but an override is available for Java using the functional `SmartPosConsumer`
-interface, both as a consumer with a lambda or as common in many older Android 
-applications by implementing it.
+Using the `PaymentManager` is simple: 
+In the `onCreate` function or in the `init` block/Java constructor, register the
+callback that will handle the result using `register`. Then, once the 
+app-switching should happen, call the `process` function.
+The SDK is built with Kotlin-first in mind,
+but an override for `register` is available for Java using the functional 
+`SmartPosConsumer` interface, both as a consumer with a lambda or as common in 
+many older Android applications by implementing it.
 
 An example could be:
+
+```kotlin
+(...)
+lateinit var paymentManager: PaymentManager
+override fun onCreate(savedInstanceState: Bundle?) {
+    val client = NetsClient.create(this)
+    this.paymentManager = client.paymentManager
+    client.dispose()
+    this.paymentManager.register {
+        // Some logic to handle paymentResult
+    }
+}
+(...)
+```
+
+And then later, when the app-switch should happen
+
 
 ```kotlin
 (...)
@@ -94,27 +117,29 @@ val data = paymentData {
     vat = 25L
     currency = "EUR"
 }
-val client = NetsClient.create(this)
-val manager = client.paymentManager
-manager.process(data) { paymentResult -> 
-    client.dispose() // Dispose of the NetsClient
-    // Some logic to handle paymentResult
-}
+manager.process(data) 
 ```
 
 or in Java
 
 ```java
 class TestActivity extends AppCompatActivity {
+    PaymentManager paymentManager;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        NetsClient client = NetsClient.create(this);
+        this.paymentManager = client.getPaymentManager();
+        client.dispose();
+        this.paymentManager.register((PaymentResult result) -> System.out.println(result.toString()));
+    }
+
     public void test() {
         PaymentData data = new PaymentData.Builder()
                 .uuid(UUID.randomUUID())
                 .amount(100L).vat(25L).currency("EUR")
                 .build();
         try {
-            NetsClient client = NetsClient.create(this);
-            PaymentManager manager = client.getPaymentManager();
-            manager.process(data, (PaymentResult result) -> System.out.println(result.toString()));
+            manager.process(data)
         } catch (ClientNotDisposedException e) {
             e.printStackTrace();
         }
@@ -126,15 +151,22 @@ or
 
 ```java
 class TestActivity extends AppCompatActivity implements SmartPosConsumer<PaymentResult> {
+    PaymentManager paymentManager;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        NetsClient client = NetsClient.create(this);
+        this.paymentManager = client.getPaymentManager();
+        client.dispose();
+        this.paymentManager.register(this);
+    }
+
     public void test() {
         PaymentData data = new PaymentData.Builder()
                 .uuid(UUID.randomUUID())
                 .amount(100L).vat(25L).currency("EUR")
                 .build();
         try {
-            NetsClient client = NetsClient.create(this);
-            PaymentManager manager = client.getPaymentManager();
-            manager.process(data, this);
+            manager.process(data);
         } catch (ClientNotDisposedException e) {
             e.printStackTrace();
         }

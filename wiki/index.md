@@ -26,6 +26,10 @@ The former is the library that will be a dependency of the ECR app, and it will
 help the communication between the ECP app and the Nets SmartPOS ecosystem, by
 providing a "client" and payload models for all the supported functionality.
 
+> The 1.0.16 release of the SDK and Selection Application has breaking changes
+> due to changes in the Google ActivityResultContract APIs.
+> Check the [changelog](/change_log)
+
 ##Nets Payment Selection application
 
 The Nets Payment Selection application (henceforth "Selection app") is a 
@@ -61,7 +65,7 @@ maven {
 to the `allprojects.repositories` block. To the module `build.gradle` file, add:
 
 ``` kotlin
-implementation("eu.nets.lab.smartpos:nets-smartpos-sdk:1.0.12")
+implementation("eu.nets.lab.smartpos:nets-smartpos-sdk:1.0.16")
 ```
 
 to the `dependencies` block.
@@ -79,7 +83,7 @@ API level 23, the one that the Saturn S1000F1 uses.
 The first step to make a payment is to obtain a `NetsClient` object. This can be
 done from any activity or fragment, using the following:
 
-``` kotlin
+```kotlin
 val client = try {
     NetsClient.create(this)
 } catch (e: ClientNotDisposedException) {
@@ -111,24 +115,31 @@ that manager, and a callback consumer function of the result payload type. An
 example of how to use `process` can be:
 
 ``` kotlin
+(in onCreate or init block)
 (...)
-val paymentManager = client.paymentManager
+this.paymentManager = client.paymentManager
+client.dispose()
+this.paymentManager.register {
+    Log.i(LOG_TAG, "Payment status: ${it.status}")
+}
+(anywhere in Activity or Fragment)
+(...)
 try {
-    paymentManager.process(data) {
-        client.dispose()
-        Log.i(LOG_TAG, "Payment status: ${it.status}")
-    }
+    this.paymentManager.process(data)
     Log.d(LOG_TAG, "payload: ${paymentManager.data}")
 } catch (e: ManagerAlreadyUsedException) {
     Log.e(LOG_TAG, "Manager is used, dumpy")
 }
 ```
 
-What this snippet does it: it gets the payment manager from the client, using
-the lazy-loaded property. It then calls `process` with a `data` parameter (more
-on this coming up) and in the resulting callback, it disposes of the 
-`NetsClient` and logs the payment result (probably not the desired functionality
-in a real scenario). It does the `process` call inside a try-catch of a
+What this snippet does: in the `onCreate` function or in the `init` block we
+set a `lateinit var` `PaymentManager` to the `PaymentManager` from the 
+`NetsClient`, and register the callback that will be called upon return to the
+ECR App after completed payment attempt, using the `register` function. 
+Then later in the code, once we have
+created a `PaymentData` payload, we send that to the `PaymentManager` using the
+`process` function, which will initiate the actual app-switching process.
+It does the `process` call inside a try-catch of a
 `ManagerAlreadyUsedException`, since some managers are meant to be single use
 and actually stores the provided payment data if needed for crash protection or
 similar (examplified in the DEBUG log message).

@@ -70,19 +70,41 @@ available from the `NetsClient` ([link](/client)) object, using either
 `client.refundManager` in Kotlin or `client.getRefundManager()` in Java.
 
 The functionality of the `RefundManager` is fairly simple; it provides the
-`process` function that is used to start the refund, as well as an override for
-Java interoperability. It also stores the provided `RefundData`, which is why
+`register` function that is used to register a callback for when a refund
+attempt is completed, as well as an override for Java interoperability.
+Furthermore, it contains the `process` function to actually start processing the
+refund attempt. It also stores the provided `RefundData`, which is why
 the `RefundManager` is a single-use. The `RefundData` is available after the
 refund attempt has been finalised using `manager.data` in Kotlin or 
 `manager.getData()` in Java.
 
-Using the `RefundManager` is simple: simply call the `process` function and
-handle the response in the callback. The SDK is built with Kotlin-first in mind,
-but an override is available for Java using the functional `SmartPosConsumer`
-interface, both as a consumer with a lambda or as common in many older Android 
-applications by implementing it.
+Using the `RefundManager` is simple: 
+In the `onCreate` function or in the `init` block/Java constructor, register the
+callback that will handle the result using `register`. Then, once the
+app-switching should happen, call the `process function. 
+The SDK is built with Kotlin-first in mind,
+but an override for `register` is available for Java using the functional 
+`SmartPosConsumer` interface, both as a consumer with a lambda or as common in
+many older Android applications by implementing it.
 
 An example could be:
+
+```kotlin
+(...)
+lateinit var refundManager: RefundManager
+override fun onCreate(savedInstanceState: Bundle?) {
+    val client = NetsClient.create(this)
+    this.refundManager = client.refundManager
+    client.dispose()
+    this.refundManager.register {
+        // Some logic to handle refundResult
+    }
+}
+(...)
+```
+
+And then later, when the app-switch should happen
+
 
 ```kotlin
 (...)
@@ -92,27 +114,29 @@ val data = refundData {
     currency = "EUR"
     method = TargetMethod.CARD
 }
-val client = NetsClient.create(this)
-val manager = client.refundManager
-manager.process(data) { refundResult -> 
-    client.dispose() // Dispose of the NetsClient
-    // Some logic to handle refundResult
-}
+manager.process(data)
 ```
 
 or in Java
 
 ```java
 class TestActivity extends AppCompatActivity {
+    RefundManager refundManager;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        NetsClient client = NetsClient.create(this);
+        this.refundManager = client.getRefundManager();
+        client.dispose();
+        this.refundManager.register((RefundResult result) -> System.out.println(result.toString()));
+    }
+
     public void test() {
         RefundData data = new RefundData.Builder()
                 .uuid(UUID.randomUUID())
                 .totalAmount(100L).currency("EUR").method(TargetMethod.CARD)
                 .build();
         try {
-            NetsClient client = NetsClient.create(this);
-            RefundManager manager = client.getRefundManager();
-            manager.process(data, (RefundResult result) -> System.out.println(result.toString()));
+            manager.process(data)
         } catch (ClientNotDisposedException e) {
             e.printStackTrace();
         }
@@ -124,15 +148,22 @@ or
 
 ```java
 class TestActivity extends AppCompatActivity implements SmartPosConsumer<RefundResult> {
+    RefundManager refundManager;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        NetsClient client = NetsClient.create(this);
+        this.refundManager = client.getRefundManager();
+        client.dispose();
+        this.refundManager.register(this);
+    }
+
     public void test() {
         RefundData data = new RefundData.Builder()
                 .uuid(UUID.randomUUID())
                 .totalAmount(100L).currency("EUR").method(TargetMethod.CARD)
                 .build();
         try {
-            NetsClient client = NetsClient.create(this);
-            RefundManager manager = client.getRefundManager();
-            manager.process(data, this);
+            manager.process(data);
         } catch (ClientNotDisposedException e) {
             e.printStackTrace();
         }
