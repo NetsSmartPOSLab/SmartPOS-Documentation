@@ -1,5 +1,10 @@
 # Change log
 
+## 1.0.17
+
+- `NetsConverters now support nullable `UUID`s.
+- Improvements to utility linter
+
 ## 1.0.16
 
 The ActivityResultContract API from Google has throws exceptions now if used as
