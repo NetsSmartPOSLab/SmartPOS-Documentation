@@ -1,5 +1,12 @@
 # Change log
 
+## 1.0.18
+
+- `PaymentData`, `PaymentResult`, `RefundData` and `RefundResult` now all 
+inherit from the `AuxPayload` interface that requires that they have an `aux`
+property of type `Map<String, AuxValue>`, as they've always had, but the
+interface type can be used as parameter type for instance for printing.
+
 ## 1.0.17
 
 - `NetsConverters now support nullable `UUID`s.
