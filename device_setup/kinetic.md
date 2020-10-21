@@ -12,7 +12,10 @@ Installation on a device is performed in 4 separate installation functions:
  4. Install Kinetic Go Release
 
 
-> NOTE: If the device is restarted while in Debug mode, the security keys will be lost. Always exit Debug mode (if used) before restarting the device. If the security keys are lost, they can only be reinstalled by following the installation process starting with Factory Reset.
+> NOTE: If the device is restarted while in Debug mode, the security keys will
+> be lost. Always exit Debug mode (if used) before restarting the device. If the
+> security keys are lost, they can only be reinstalled by following the
+> installation process starting with Factory Reset.
 
 ## 1. Prepare the device
 
@@ -28,6 +31,11 @@ Installation on a device is performed in 4 separate installation functions:
 
 ## 2. Install Firmware / Castles Android Updates
 
+> NOTE: In the remainder of this section, we destinguish between the **Loader**
+> application on the Android Device, and the **Loader.exe** tool running on your
+> computer. The two tools work in tandem, and both need to be open and running
+> at the same time to function
+
 1. Download the 
 [install package](https://kineticsmart-my.sharepoint.com/:u:/p/jim/ER6SD_gM185MqVvgr4Tlh1cBvJugHnnARvMWV29Sg3fb1g).
 This package contains the tools required to load software and security keys,
@@ -36,8 +44,9 @@ as well as the software packages.
 assigned (Device Manager -> Ports (COM & LPT) -> "Qualcomm HS-USB..."
     * NOTE: Check the com port matches the assigned port each time before you use
     the loader
-3. Open the Loader.exe program on your computer (in the Tools folder of the 
-package), and on the Android device, find and start the "Loader" application
+3. Open the **Loader.exe** program on your **computer** (in the Tools folder of
+the package), and on the **Android device**, find and start the **"Loader"** 
+application
     1. Using the find files icon (folder with binoculars) locate the firmware 
     folder, and the **\Firmware -RAU16\1\02.SecureModule\signed** folder within, 
     select the file with the extension ".mci"
