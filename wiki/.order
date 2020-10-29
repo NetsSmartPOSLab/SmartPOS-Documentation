@@ -7,5 +7,6 @@ transaction_status
 end_of_day
 builders
 types
+print_card_slips
 card_transaction_auxiliary_data
 change_log

@@ -1,5 +1,22 @@
 # Change log
 
+## 1.0.19
+
+We now include a utility for printing card reciept slips for payments and 
+refunds. More information about this is found on the 
+[print card slips](/print_card_slips) page.
+
+- Selection app now includes a demo-activity that will briefly show the amount,
+vat and currency before the payment instruction is sent to the Selection screen.
+- A serious bug in `eu.nets.lab.smartpos.sdk.client.NetsConverters` that didn't
+save/load `AuxMap` properly from Room databases has been fixed. Unfortunately
+this invalidates currently stored instances of these.
+- The entirety of the SDK library has been compiled with the Kotlin 1.4 flag
+"-Xexplicit-api=strict" which safeguards it from accidental type changes in
+future releases. The source code is therefore also more explicit in regards to
+visibility and typing.
+
+
 ## 1.0.18
 
 - `PaymentData`, `PaymentResult`, `RefundData` and `RefundResult` now all 
